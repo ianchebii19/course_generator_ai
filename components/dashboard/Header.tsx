@@ -4,14 +4,14 @@ import Image from 'next/image';
 
 export default function Header() {
   return (
-    <nav className="bg-white shadow-md fixed w-full z-10">
+    <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
               <Image
-                src="/conlogo.png" alt="Logo" width={150} height={120}/>
+                src="/conlogo.png" alt="Logo" width={80} height={60}/>
             </Link>
             
           </div>
