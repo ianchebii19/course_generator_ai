@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Button } from '../ui/button';
 import Image from 'next/image';
+import { UserButton } from '@clerk/nextjs';
 
 export default function Header() {
   return (
@@ -9,8 +9,8 @@ export default function Header() {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/">
-              <Image
+            <Link href="/" className=' block sm:hidden'>
+              <Image 
                 src="/conlogo.png" alt="Logo" width={80} height={60}/>
             </Link>
             
@@ -18,11 +18,7 @@ export default function Header() {
 
           {/* Dashboard Button */}
           <div>
-            <Link href="/dashboard">
-              <Button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
-                Go to Dashboard
-              </Button>
-            </Link>
+            <UserButton />
           </div>
         </div>
       </div>

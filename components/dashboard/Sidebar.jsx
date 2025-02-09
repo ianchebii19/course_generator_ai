@@ -4,9 +4,9 @@ import { FaHome, FaCompass, FaRocket, FaSignOutAlt } from 'react-icons/fa';
 
 export default function Sidebar() {
   return (
-    <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg hidden sm:block">
+    <div className=" inset-y-0 left-0 w-64 bg-white shadow-lg hidden sm:block">
       {/* Logo */}
-      <div className="flex items-center justify-center h-16 ">
+      <div className="flex items-center justify-center ">
          <Image src="/conarc.png" alt="Logo" width={150} height={120}/>
          
       </div>
