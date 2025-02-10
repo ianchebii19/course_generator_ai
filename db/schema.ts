@@ -1,3 +1,4 @@
+
 import { pgTable, serial, text, varchar, integer, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 export const courses = pgTable('courses', {
