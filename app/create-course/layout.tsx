@@ -1,4 +1,5 @@
 'use client'
+
 import { UserInputContext } from "@/components/context/UserIputContext";
 import Header from "@/components/dashboard/Header";
 import Sidebar from "@/components/dashboard/Sidebar";
@@ -9,21 +10,24 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [userCourseInput, setuserCourseInput] = useState([]); // Define a suitable value for the context
+  // Initialize with an object, not an array
+  const [userCourseInput, setUserCourseInput] = useState({ category: "" });
 
   return (
     <div>
-      <UserInputContext.Provider value={{userCourseInput, setuserCourseInput}}>
-        <div className="flex">
-          <div className="z-0">
-            <Sidebar />
-          </div>
+      <div className="flex">
+        <div className="z-0">
+          <Sidebar />
+        </div>
+
+        {/* Provide an object with both state and setter function */}
+        <UserInputContext.Provider value={{ userCourseInput, setUserCourseInput }}>
           <div className="w-full">
             <Header />
             {children}
           </div>
-        </div>
-      </UserInputContext.Provider>
+        </UserInputContext.Provider>
+      </div>
     </div>
   );
 }

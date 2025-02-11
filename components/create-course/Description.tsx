@@ -6,7 +6,7 @@ const Description = () => {
   return (
     <div className='mx-20  lg:mx-32'>
         <div  className='mt-6'>
-            <label htmlFor=""> Write topic you want to generte (i.e Python, Sports, Politics)</label>
+            <label htmlFor=""> Write topic you want to generte (i.e python, sports, politics)</label>
             <Input placeholder={'Topic'}/>
         </div>
         <div className='mt-6'>

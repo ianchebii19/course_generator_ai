@@ -1,10 +1,18 @@
-import { createContext, Dispatch, SetStateAction } from "react";
+// context/UserInputContext.tsx
+import { createContext, Dispatch, SetStateAction, } from "react";
+
+// Define userCourseInput as an object
+interface UserCourseInput {
+  category: string;
+}
 
 // Define the context type
 interface UserInputContextType {
-  userInput: string;
-  setUserInput: Dispatch<SetStateAction<string>>;
+  userCourseInput: UserCourseInput;
+  setUserCourseInput: Dispatch<SetStateAction<UserCourseInput>>;
 }
 
-// Create the context with a default undefined value
+// Create the context with undefined as default
 export const UserInputContext = createContext<UserInputContextType | undefined>(undefined);
+
+

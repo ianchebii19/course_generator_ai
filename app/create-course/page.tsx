@@ -4,8 +4,6 @@ import React, { useState } from 'react';
   import { FaAudioDescription } from 'react-icons/fa6';
   import { BiSolidCategoryAlt } from 'react-icons/bi';
   import { Button } from '@/components/ui/button';
-import CategoryList from '@/components/shared/CategoryList';
-import Category from '@/components/create-course/Category';
 import SelectCategory from '@/components/create-course/SelectCategory';
 import Description from '@/components/create-course/Description';
 import SelectOption from '@/components/create-course/SelectOption';
