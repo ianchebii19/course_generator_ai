@@ -8,7 +8,7 @@ export default function AddCourse() {
       <p className="text-gray-600 mb-6">
         Start building your personalized course by adding topics, videos, and more.
       </p>
-      <Link href="/dashboard/create-course">
+      <Link href="/create-course">
         <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition duration-300">
           Create Course
         </Button>
