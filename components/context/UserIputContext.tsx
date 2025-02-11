@@ -3,6 +3,12 @@ import { createContext, Dispatch, SetStateAction, } from "react";
 
 // Define userCourseInput as an object
 interface UserCourseInput {
+  level: string;
+  duration: string;
+  displayVideo: string;
+  noOfChapter: string;
+  description: string;
+  topic: string;
   category: string;
 }
 

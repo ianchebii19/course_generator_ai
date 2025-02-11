@@ -5,7 +5,7 @@ import Header from "@/components/dashboard/Header";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { useState } from "react";
 
-export default function DashboardLayout({
+export default function CreateCourseLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
