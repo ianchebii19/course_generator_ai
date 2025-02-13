@@ -11,7 +11,15 @@ export default function CreateCourseLayout({
   children: React.ReactNode;
 }>) {
   // Initialize with an object, not an array
-  const [userCourseInput, setUserCourseInput] = useState({ category: "" });
+  const [userCourseInput, setUserCourseInput] = useState({
+    category:"",
+    topic: "",
+    level: "",
+    duration: "",
+    displayVideo: "",
+    noOfChapter: "",
+    description: "",
+  });
 
   return (
     <div>

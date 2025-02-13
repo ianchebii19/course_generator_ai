@@ -1,7 +1,7 @@
-const { default: axios } = require("axios");
+import { default: axios }  from "axios";
 const YOUTUBE_BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-export const getVideos = async (query: any) => {
+export const getVideos = async (query) => {
     const params = {
         part: 'snippet',
         q: query,
