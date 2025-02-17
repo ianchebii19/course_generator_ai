@@ -1,41 +1,18 @@
-import React from 'react';
+import { Course } from "@/types";
 
-// Define the types for the course prop
-interface Course {
-  level?: string;
-  courseOutput?: {
-    course?: {
-      duration?: string;
-      noOfChapters?: number;
-    };
-  };
-  includeVideo?: boolean; // Assuming this is a boolean
+interface CourseInfoProps {
+  course: Course | null;
+
 }
-
-interface CourseDetailProps {
-  course: Course;
-}
-
-const CourseDetail: React.FC<CourseDetailProps> = ({ course }) => {
+const CourseDetail: React.FC<CourseInfoProps> = ({ course }) => {
   return (
-    <div className='border p-6 rounded-md shadow-sm mt-4'>
+    <div className='border p-6 rounded-md shadow-sm mt-3'>
       <div className='grid grid-cols-2 md:grid-cols-4'>
-        <div className='flex gap-3'>
-          <h2 className='text-gray-400'>Skill Level</h2>
-          <h2 className='font-medium text-lg'>{course?.level}</h2>
-        </div>
-        <div className='flex gap-3'>
-          <h2 className='text-gray-400'>Duration</h2>
-          <h2 className='font-medium text-lg'>{course?.courseOutput?.course?.duration}</h2>
-        </div>
-        <div className='flex gap-3'>
-          <h2 className='text-gray-400'>No of Chapters</h2>
-          <h2 className='font-medium text-lg'>{course?.courseOutput?.course?.noOfChapters}</h2>
-        </div>
-        <div className='flex gap-3'>
-          <h2 className='text-gray-400'>Video</h2>
-          <h2 className='font-medium text-lg'>{course?.includeVideo ? 'Yes' : 'No'}</h2>
-        </div>
+        <h3 className="mt-2 text-xs text-blue-400 hover:text-blue-600">Level: {course?.level || 'Level Not Available'}</h3>
+        <h3 className="mt-2 text-xs text-blue-400 hover:text-blue-600">User: {course?.userName || 'Creator Not Available'}</h3>
+        <h3 className="mt-2 text-xs text-blue-400 hover:text-blue-600">Duration: {course?.courseOutput?.['Total Duration'] || 'Duration Not Available'}</h3>
+        <h3 className="mt-2 text-xs text-blue-400 hover:text-blue-600">Video: {course?.includeVideo ? 'Yes' : 'No'}</h3>
+
       </div>
     </div>
   );

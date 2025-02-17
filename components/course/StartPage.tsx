@@ -1,12 +1,12 @@
-import EditChapter from './EditChapter';
+
 import { Course } from '@/types'; // ✅ Import unified Course type
 
-interface ChapterListProps {
+interface StartPageProps {
   course: Course | null;
-  edit?: boolean;
+  
 }
 
-const ChapterList: React.FC<ChapterListProps> = ({ course, edit = true }) => {
+const ChapterList: React.FC<StartPageProps> = ({ course }) => {
   return (
     <div className="mt-3 border rounded-lg shadow-sm p-4">
       <div className="font-bold text-center text-2xl  text-blue-700 py-2">Chapters</div>
@@ -31,8 +31,7 @@ const ChapterList: React.FC<ChapterListProps> = ({ course, edit = true }) => {
               </p>
             </div>
 
-            {/* Edit Chapter Button (Conditional) */}
-            {edit && <EditChapter course={course} index={index} />}
+           
           </div>
         ))}
       </div>

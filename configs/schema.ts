@@ -1,4 +1,5 @@
-import { integer, json, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+
+import { boolean, json, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
 export const CourseList=pgTable('CourseList', {
     id:serial('id').primaryKey(),
@@ -10,14 +11,19 @@ export const CourseList=pgTable('CourseList', {
     userName:varchar('username').notNull(),
     includeVideo:varchar('includeVideo').notNull().default('yes'),
     courseOutput:json('courseOutput').notNull(),
-    userProfileImage:varchar('UserProfileImage').notNull()
-
+    userProfileImage:varchar('UserProfileImage').notNull(),
+    courseBanner:varchar('courseBanner').default('/coursegen.jpeg'),
+    published:boolean('published').default(false),
 })
 
-export const Chapters=pgTable('Chapters', {
-    id:serial('id').primaryKey(),
-    chapterId : integer('courseId').notNull(),
-    ChapterName:varchar('name').notNull(),
-    content:json('content').notNull(),
-    videoId:varchar('videoId').notNull(),
-})
+
+
+
+
+export const Chapters = pgTable('Chapters', {
+    id: serial('id').primaryKey(),
+    courseId: varchar('courseId').notNull(), // Match the type with CourseList.courseId
+    ChapterName: varchar('ChapterName').notNull(), // Ensure this matches the insertion logic
+    content: json('content').notNull(),
+    videoId: varchar('videoId').notNull(),
+  });

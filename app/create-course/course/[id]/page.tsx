@@ -1,117 +1,132 @@
 'use client';
 
-import { CourseList, Chapters } from '@/configs/schema'; // Ensure Chapters is imported
-import { useUser } from '@clerk/nextjs';
-import { and, eq } from 'drizzle-orm';
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { GenerateChapterContent_AI } from '@/configs/AiModel';
 import { db } from '@/configs';
+import { Chapters, CourseList } from '@/configs/schema';
+import { useUser } from '@clerk/nextjs';
+import { eq, and } from 'drizzle-orm';
+import React, { use, useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import CourseInfo from '@/components/course/CourseInfo';
+import { Course } from '@/types'; // ✅ Import shared type
 import CourseDetail from '@/components/course/CourseDetail';
 import ChapterList from '@/components/course/ChapterList';
+import { GenerateChapterContent_AI } from '@/configs/AiModel';
+import { getVideos } from '@/configs/service';
+import { useRouter } from 'next/navigation'; // Updated import
 
-interface Params {
-  CourseId?: string;
-}
-
-interface Course {
-  id: number;
-  courseId: string;
-  name: string;
-  category: string;
-  level: string;
-  createdBy: string;
-  userName: string;
-  includeVideo: string;
-  courseOutput?: {
-    course?: {
-      name?: string;
-      description?: string;
-      category?: string;
-    };
-    chapters?: { name: string }[];
-  };
-  userProfileImage: string;
-}
-
-function CourseLayout({ params }: { params: Params }) {
+function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string }> }) {
+  const params = use(promiseParams);
   const { user } = useUser();
   const [course, setCourse] = useState<Course | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const router = useRouter(); // Updated router import
 
   useEffect(() => {
-    if (params?.CourseId && user) {
-      GetCourse();
-    }
-  }, [params, user]);
+    setIsClient(true); // Set isClient to true after component mounts
+  }, []);
 
-  const GetCourse = async () => {
-    if (!params?.CourseId || !user?.primaryEmailAddress?.emailAddress) {
-      console.log('Missing CourseId or user email address');
-      return;
-    }
+  useEffect(() => {
+    if (!params?.id || !user || !isClient) return; // Only run on the client
 
-    try {
-      const result = await db
-        .select()
-        .from(CourseList)
-        .where(
-          and(
-            eq(CourseList.courseId, params.CourseId),
-            eq(CourseList.createdBy, user.primaryEmailAddress.emailAddress)
-          )
-        );
+    const GetCourse = async () => {
+      try {
+        const result = await db
+          .select()
+          .from(CourseList)
+          .where(
+            and(
+              eq(CourseList.courseId, params.id),
+              eq(CourseList.createdBy, user.primaryEmailAddress?.emailAddress || '')
+            )
+          );
 
-      setCourse(result[0] || null);
-      console.log('Fetched Course:', result[0]);
-    } catch (error) {
-      console.error('Error fetching course:', error);
-    }
-  };
+        if (result.length > 0) {
+          setCourse({
+            ...result[0],
+            courseOutput: result[0].courseOutput as Course['courseOutput'],
+          });
+        }
+
+        console.log('Fetched Course:', result[0]);
+      } catch (error) {
+        console.error('Error fetching course:', error);
+      }
+    };
+
+    GetCourse();
+  }, [params.id, user, isClient]);
 
   const GenerateChapterContent = async () => {
-    if (!course || !course.courseOutput?.chapters) {
+    if (!isClient || !course || !course.courseOutput?.Chapters) {
       console.warn('No course or chapters available');
       return;
     }
 
-    for (const chapter of course.courseOutput.chapters) {
-      const PROMPT = `Explain the concept in detail on Topic: ${course.courseOutput.course?.name}, Chapter: ${chapter.name} in JSON format with fields as title and description in detail, Code Example (HTML format) if applicable.`;
+    try {
+      for (const chapter of course.courseOutput.Chapters) {
+        const PROMPT = `Explain the concept in detail on Topic: ${course.name}, Chapter: ${chapter['Chapter Name']} in JSON format with fields as title and description in detail, Code Example (HTML format) if applicable.`;
 
-      try {
-        let videoId = '';
+        let videoId: string = '';
 
+        // Generate AI content for the chapter
         const result = await GenerateChapterContent_AI.sendMessage(PROMPT);
         const responseText = await result.response?.text();
         console.log('AI-generated content:', responseText);
 
-        // Simulated video fetching service (replace with actual implementation)
-        const res = await service.getVideos(`${course.courseOutput.course?.name}: ${chapter.name}`);
-        videoId = res[0]?.id?.videoId || '';
+        // Fetch YouTube videos for the chapter
+        const query = `${course.name}: ${chapter['Chapter Name']}`; // Corrected query
+        const videos = await getVideos(query);
 
+        if (videos.length > 0) {
+          videoId = videos[0].id.videoId;
+          console.log('Fetched videoId:', videoId); // Extract videoId from the first result
+        }
+
+        // Save chapter content to the database
         await db.insert(Chapters).values({
-          chapterName: chapter.name,
-          videoId: videoId,
+          ChapterName: chapter['Chapter Name'] || 'Untitled Chapter',
+          videoId: videoId, // Use the fetched videoId
           courseId: course.courseId,
+          content: responseText || '', // Save AI-generated content
         });
 
-        console.log(`Saved chapter: ${chapter.name} with Video ID: ${videoId}`);
-      } catch (error) {
-        console.error('Error generating AI-generated chapter content:', error);
+        console.log(`Saved chapter: ${chapter['Chapter Name']} with Video ID: ${videoId}`);
       }
+
+      // Update the course after all chapters are processed
+      await db
+        .update(CourseList)
+        .set({ 
+          published: true
+        })
+        
+
+      // Redirect to the finish page
+      router.replace(`/create-course/course/${course.courseId}/finish`);
+    } catch (error) {
+      console.error('Error generating AI-generated chapter content:', error);
     }
   };
 
   return (
-    <div className='mt-10 mb-12 px-7 md:px-20 lg:px-44'>
-      <div className='font-bold text-center text-2xl'>Course Layout</div>
-      <CourseInfo course={course} />
-      <CourseDetail course={course} />
-      <ChapterList course={course} />
+    <div className="mt-10 mb-8 px-7 md:px-16 lg:px-32">
+      <div className="font-bold text-center text-2xl text-blue-700 py-2">Course Layout</div>
 
-      <Button className='my-6' onClick={GenerateChapterContent}>
-        Generate Course Content
-      </Button>
+      {/* Render Course Info */}
+      {isClient && <CourseInfo course={course} edit={true} />}
+
+      {/* Render Course Details */}
+      {isClient && <CourseDetail course={course} />}
+
+      {/* Render Chapter List */}
+      {isClient && <ChapterList course={course} edit={true} />}
+
+      {/* Generate Course Content Button */}
+      {isClient && (
+        <Button className="my-6 bg-blue-500 hover:bg-blue-400" onClick={GenerateChapterContent}>
+          Generate Course Content
+        </Button>
+      )}
     </div>
   );
 }

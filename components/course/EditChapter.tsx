@@ -14,104 +14,86 @@ import { Textarea } from '@/components/ui/textarea';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
 import { CourseList } from '@/configs/schema';
-import { eq } from 'drizzle-orm'; // Ensure this is imported
+import { eq } from 'drizzle-orm';
 import { db } from '@/configs';
-
-interface Chapter {
-  name?: string;
-  description?: string;
-}
-
-interface Course {
-  id?: string; // Assuming there is an id field
-  courseOutput: {
-    course: {
-      chapters: Chapter[];
-    };
-  };
-}
+import { Course } from '@/types';
 
 interface EditChapterProps {
   course: Course;
-  index: number; // Corrected type from 'index' to 'number'
+  index: number;
 }
 
 const EditChapter: React.FC<EditChapterProps> = ({ course, index }) => {
-  const chapters = course?.courseOutput?.course.chapters;
+  const chapters = course?.courseOutput?.Chapters; // Corrected to match the data structure
 
-  const [name, setName] = useState<string | undefined>(chapters?.[index]?.name);
-  const [about, setAbout] = useState<string | undefined>(chapters?.[index]?.description);
+  const [name, setName] = useState(chapters?.[index]?.['Chapter Name'] || '');
+  const [description, setDescription] = useState(chapters?.[index]?.About || '');
 
-  // Correct usage of useEffect
   useEffect(() => {
-    if (chapters && chapters[index]) {
-      setName(chapters[index].name);
-      setAbout(chapters[index].description);
+    if (chapters?.[index]) {
+      setName(chapters[index]['Chapter Name'] || '');
+      setDescription(chapters[index].About || '');
     }
-  }, [course, index]); // Dependency array to update when course or index changes
+  }, [course, index]);
 
   const onUpdateHandler = async () => {
-    if (chapters && chapters[index]) {
-      // Update chapter details
-      chapters[index].name = name;
-      chapters[index].description = about;
+    if (!chapters || !chapters[index]) return;
 
-      // Update the course object with new values
-      const updatedCourse = {
+    const updatedChapters = [...chapters];
+    updatedChapters[index] = {
+      ...updatedChapters[index],
+      'Chapter Name': name,
+      About: description,
+    };
+
+    const updatedCourse = {
+      ...course,
+      courseOutput: {
         ...course.courseOutput,
-        course: {
-          ...course.courseOutput.course,
-          chapters,
-        },
-      };
+        Chapters: updatedChapters,
+      },
+    };
 
-      try {
-        const result = await db.update(CourseList)
-          .set({ courseOutput: updatedCourse })
-          .where(eq(CourseList.id, course.id)) // Assuming course.id exists
-          .returning({ id: CourseList.id });
+    try {
+      const result = await db
+        .update(CourseList)
+        .set({ courseOutput: updatedCourse.courseOutput }) // Update only the courseOutput
+        .where(eq(CourseList.id, course.id)) // Ensure `course.id` exists
+        .returning({ id: CourseList.id });
 
-        console.log(result);
-      } catch (error) {
-        console.error('Error updating course:', error);
-      }
+      console.log('Updated Course:', result);
+    } catch (error) {
+      console.error('Error updating course:', error);
     }
   };
 
   return (
-    <div>
-      <Dialog>
-        <DialogTrigger>
-          <FaEdit className="text-xl text-primary" />
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Course Chapter and Description</DialogTitle>
-            <DialogDescription>
-              <div className="mb-4">
-                <label className="block mb-2 text-sm font-medium">Chapter Title</label>
-                <Input
-                  value={name} // Use value for controlled component
-                  onChange={(event) => setName(event.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium">Chapter Description</label>
-                <Textarea
-                  value={about} // Use value for controlled component
-                  onChange={(event) => setAbout(event.target.value)}
-                />
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button onClick={onUpdateHandler}>Update</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+    <Dialog>
+      <DialogTrigger>
+        <FaEdit className="text-xl text-primary cursor-pointer" />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Chapter</DialogTitle>
+          <DialogDescription>
+            Modify the chapter title and description.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="mb-4">
+          <label className="block mb-2 text-sm font-medium text-blue-400">Chapter Title</label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div>
+          <label className="block mb-2 text-sm font-medium text-blue-400">Chapter Description</label>
+          <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button onClick={onUpdateHandler} className='bg-blue-500 hover:bg-blue-400'>Update</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

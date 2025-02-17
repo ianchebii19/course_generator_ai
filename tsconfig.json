@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/page/Navbar.jsx", "components/dashboard/Sidebar.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/page/Navbar.jsx", "components/dashboard/Sidebar.jsx", "app/create-course/course/[id]/finish/page.jsx"],
   "exclude": ["node_modules"]
 }
