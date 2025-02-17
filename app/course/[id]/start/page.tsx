@@ -1,43 +1,22 @@
 'use client';
 
-
 import { db } from '@/configs';
-import { CourseList } from '@/configs/schema';
+import { Chapters, CourseList } from '@/configs/schema';
 import { useUser } from '@clerk/nextjs';
 import React, { useEffect, useState, use } from 'react';
 import { eq, and } from 'drizzle-orm';
+import { Chapter, Course } from '@/types';
+import ChapterListCard from '@/components/course/ChapterListCard';
+import ChapterContent from '@/components/course/ChapterContent';
 
-
-interface Course {
-  courseId: string;
-  createdBy: string;
-  courseOutput: {
-    'Course Name': string;
-    Chapters: Array<{
-      'Chapter Name': string;
-      Duration: string;
-    }>;
-  };
-}
-
-interface CoursePageProps {
-  params: Promise<{ id: string }>;
-}
-
-const Course = ({ params }: CoursePageProps) => {
+function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }> }) {
+  const params = use(promiseParams); // Unwrap the params Promise
   const { user } = useUser();
   const [course, setCourse] = useState<Course | null>(null);
-  const [isClient, setIsClient] = useState(false);
-
-  // Unwrap the params object using React.use()
-  const { id } = use(params);
-
+  const [chapterContent, setChapterContent] = useState<Chapter | null>(null);
+  const [selectedChapter, setSelectedChapter] =useState<Chapter | null>(null);
   useEffect(() => {
-    setIsClient(true); // Set isClient to true after component mounts
-  }, []);
-
-  useEffect(() => {
-    if (!id || !user || !isClient) return; // Only run on the client
+    if (!params?.id || !user) return;
 
     const getCourse = async () => {
       try {
@@ -46,17 +25,16 @@ const Course = ({ params }: CoursePageProps) => {
           .from(CourseList)
           .where(
             and(
-              eq(CourseList.courseId, id),
+              eq(CourseList.courseId, params.id),
               eq(CourseList.createdBy, user.primaryEmailAddress?.emailAddress || '')
             )
           );
 
         if (result.length > 0) {
           setCourse({
-            ...result[0],
-            courseOutput: result[0].courseOutput as Course['courseOutput'],
-          });
+            ...result[0], });
         }
+        getSelectedChapterContent(1)
 
         console.log('Fetched Course:', result[0]);
       } catch (error) {
@@ -65,73 +43,67 @@ const Course = ({ params }: CoursePageProps) => {
     };
 
     getCourse();
-  }, [id, user, isClient]);
+  }, [params.id, user]);
 
-  if (!isClient) {
-    return null; // Render nothing on the server
-  }
+  const getSelectedChapterContent = async (chapterId: number) => {
+    if (!course?.courseId) {
+      console.error('Course ID is not available');
+      return;
+    }
+
+    try {
+      const result = await db
+        .select()
+        .from(Chapters)
+        .where(
+          and(
+            eq(Chapters.chapterId, chapterId),
+            eq(Chapters.courseId, course?.courseId)
+          )
+        );
+
+      if (result.length > 0) {
+        setSelectedChapter(result[0]);
+        console.log('Selected Chapter Content:', result[0]);
+      } else {
+        setChapterContent(null);
+        console.warn('No chapter content found for chapterId:', chapterId);
+      }
+    } catch (error) {
+      console.error('Error fetching chapter content:', error);
+    }
+  };
 
   return (
     <div className='flex'>
-      <div className='md:w-64 h-screen bg-blue-50 hidden md:block'>
-        <h2 className='bg-blue-600 font-bold text-ld px-6 py-4  text-white '>
+      {/* Sidebar */}
+      <div className='md:w-64 h-screen hidden md:block border-r shadow-sm'>
+        <h2 className='text-white bg-blue-500 px-4 py-2 font-medium text-lg'>
           {course?.courseOutput?.['Course Name'] || 'Course Name Not Available'}
         </h2>
         <div>
-          <div className="font-bold text-center text-2xl text-blue-700 py-2">Chapters</div>
-          <div className="space-y-4 cursor-pointer">
-            {course?.courseOutput?.Chapters?.map((chapter, index) => (
-              <div key={index} className="flex gap-4 items-start p-4 border rounded-lg shadow-sm">
-                {/* Chapter Number */}
-                <div className="bg-blue-400 text-white text-lg rounded-full h-8 w-8 flex items-center justify-center">
-                  {index + 1}
-                </div>
-
-                {/* Chapter Details */}
-                <div className="flex-1">
-                  <h2 className="font-semibold text-md text-blue-500">
-                    {chapter['Chapter Name'] || 'Chapter Name Not Available'}
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Duration: {chapter.Duration || 'Duration Not Available'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          {course?.courseOutput?.Chapters?.map((chapter, index) => (
+            <div
+              key={index}
+              className={`cursor-pointer hover:bg-blue-100 ${selectedChapter?.['Chapter Name'] === chapter['Chapter Name'] ? 'bg-blue-100' : ''}`}
+              onClick={() => {setSelectedChapter(chapter);
+                 getSelectedChapterContent(index+1)}}
+            >
+              <ChapterListCard chapter={chapter} index={index} />
+            </div>
+          ))}
         </div>
       </div>
 
-
-      <div className='w-full'>
-      <div className="space-y-4">
-        {course?.courseOutput?.Chapters?.map((chapter, index) => (
-          <div key={index} className="flex gap-4 items-start p-4 border rounded-lg shadow-sm">
-            {/* Chapter Number */}
-            <div className="bg-blue-400 text-white text-xl rounded-full h-8 w-8 flex items-center justify-center">
-              {index + 1}
-            </div>
-
-            {/* Chapter Details */}
-            <div className="flex-1">
-              <h2 className="font-semibold text-md  text-blue-500">
-                {chapter['Chapter Name'] || 'Chapter Name Not Available'}
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                {chapter.About || 'Description Not Available'}
-              </p>
-            </div>
-
-          </div>
-        ))}
-      </div>
-
+      {/* Main Content Area */}
+      <div className='w-full p-4'>
+     <ChapterContent  chapter={selectedChapter} content={chapterContent}/> 
      
-      </div>
-      
+
 
     </div>
+    </div>
   );
-};
+}
 
-export default Course;
+export default CoursePage;

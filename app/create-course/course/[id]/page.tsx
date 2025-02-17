@@ -63,7 +63,8 @@ function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string 
     }
 
     try {
-      for (const chapter of course.courseOutput.Chapters) {
+      for (let index = 0; index < course.courseOutput.Chapters.length; index++) {
+        const chapter = course.courseOutput.Chapters[index];
         const PROMPT = `Explain the concept in detail on Topic: ${course.name}, Chapter: ${chapter['Chapter Name']} in JSON format with fields as title and description in detail, Code Example (HTML format) if applicable.`;
 
         let videoId: string = '';
@@ -74,7 +75,7 @@ function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string 
         console.log('AI-generated content:', responseText);
 
         // Fetch YouTube videos for the chapter
-        const query = `${course.name}: ${chapter['Chapter Name']}`; // Corrected query
+        const query = `${course.name}: ${chapter['Chapter Name']}`;
         const videos = await getVideos(query);
 
         if (videos.length > 0) {
@@ -84,6 +85,7 @@ function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string 
 
         // Save chapter content to the database
         await db.insert(Chapters).values({
+          chapterId: index + 1, // Use a unique identifier for each chapter
           ChapterName: chapter['Chapter Name'] || 'Untitled Chapter',
           videoId: videoId, // Use the fetched videoId
           courseId: course.courseId,
@@ -99,7 +101,7 @@ function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string 
         .set({ 
           published: true
         })
-        
+        .where(eq(CourseList.courseId, course.courseId));
 
       // Redirect to the finish page
       router.replace(`/create-course/course/${course.courseId}/finish`);

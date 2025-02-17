@@ -20,14 +20,14 @@ export default function Sidebar() {
           </div>
         </Link>
 
-        <Link href="/dashbord/explore">
+        <Link href="/dashboard/explore">
           <div className="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 cursor-pointer">
             <FaCompass className="w-5 h-5" />
             <span className="ml-3">Explore</span>
           </div>
         </Link>
 
-        <Link href="/dashboard/upgrade">
+        <Link href="/dashboard/explore">
           <div className="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 cursor-pointer">
             <FaRocket className="w-5 h-5" />
             <span className="ml-3">Upgrade</span>

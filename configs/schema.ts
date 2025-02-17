@@ -1,5 +1,5 @@
 
-import { boolean, json, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, json, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
 export const CourseList=pgTable('CourseList', {
     id:serial('id').primaryKey(),
@@ -23,6 +23,7 @@ export const CourseList=pgTable('CourseList', {
 export const Chapters = pgTable('Chapters', {
     id: serial('id').primaryKey(),
     courseId: varchar('courseId').notNull(), // Match the type with CourseList.courseId
+    chapterId:integer('chapterId').notNull(),
     ChapterName: varchar('ChapterName').notNull(), // Ensure this matches the insertion logic
     content: json('content').notNull(),
     videoId: varchar('videoId').notNull(),

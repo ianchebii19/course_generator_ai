@@ -1,8 +1,9 @@
 export interface Chapter {
+  chapterId: number
   About: string;
   id: number;
   chapterName: string;
-  content: unknown;
+  content: [];
 
   // Add other properties as needed
 }

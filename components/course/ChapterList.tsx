@@ -20,7 +20,7 @@ const ChapterList: React.FC<ChapterListProps> = ({ course, edit = true }) => {
 
             {/* Chapter Details */}
             <div className="flex-1">
-              <h2 className="font-semibold text-md  text-blue-500">
+              <h2 className="font-semibold text-md  text-blue-500 ">
                 {chapter['Chapter Name'] || 'Chapter Name Not Available'}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
