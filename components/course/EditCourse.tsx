@@ -18,10 +18,11 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/configs';
 import { Course } from '@/types';
 
-interface EditCourseProps{
+interface EditCourseProps {
   course: Course | null;
-
+  Description?:string
 }
+
 const EditCourse: React.FC<EditCourseProps> = ({ course }) => {
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -29,12 +30,14 @@ const EditCourse: React.FC<EditCourseProps> = ({ course }) => {
 
   // Update state when `course` changes
   useEffect(() => {
-    setName(course?.courseOutput?.course?.name || '');
-    setDescription(course?.courseOutput?.Description || '');
+    if (course) {
+      setName(course.courseOutput?.course?.name || '');
+      setDescription(course.courseOutput?.Description || '');
+    }
   }, [course]);
 
   const onUpdateHandler = async () => {
-    if (!course.id) {
+    if (!course?.id) {
       console.error("Missing course ID");
       return;
     }
@@ -44,9 +47,9 @@ const EditCourse: React.FC<EditCourseProps> = ({ course }) => {
     try {
       // Ensure courseOutput is correctly structured
       const updatedCourseOutput = {
-        ...course?.courseOutput,
+        ...course.courseOutput,
         course: {
-          ...course?.courseOutput.course,
+          ...course.courseOutput?.course,
           name,
           description,
         },
@@ -64,10 +67,15 @@ const EditCourse: React.FC<EditCourseProps> = ({ course }) => {
       document.getElementById(`close-dialog-${course.id}`)?.click();
     } catch (error) {
       console.error("Error updating course:", error);
+      // Optionally, show a toast or error message to the user
     } finally {
       setIsUpdating(false);
     }
   };
+
+  if (!course) {
+    return null; // Return early if no course is provided
+  }
 
   return (
     <div>
@@ -98,7 +106,7 @@ const EditCourse: React.FC<EditCourseProps> = ({ course }) => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={onUpdateHandler} disabled={isUpdating} className='bg-blue-500 hover:400'>
+            <Button onClick={onUpdateHandler} disabled={isUpdating} className='bg-blue-500 hover:bg-blue-400'>
               {isUpdating ? "Updating..." : "Update"}
             </Button>
             <DialogClose asChild>

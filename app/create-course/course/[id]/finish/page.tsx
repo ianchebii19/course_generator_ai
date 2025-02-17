@@ -36,9 +36,7 @@ function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string 
 
         if (result.length > 0) {
           setCourse({
-            ...result[0],
-            courseOutput: result[0].courseOutput as Course['courseOutput'],
-          });
+            ...result[0],});
         }
 
         console.log('Fetched Course:', result[0]);
@@ -53,7 +51,7 @@ function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string 
   
   return (
     <div className="mt-10 mb-8 px-7 md:px-16 lg:px-32">
-      <div className="font-bold text-center text-xl text-blue-600 py-2">Conratulation your course is ready!</div>
+      <div className="font-bold text-center text-xl text-blue-600 py-2">Congratulation your course is ready!</div>
 
 <FinishClient course={course}/>
     

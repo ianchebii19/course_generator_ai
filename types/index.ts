@@ -23,14 +23,15 @@ export interface CourseOutput {
 export interface Course {
   id: number;
   courseId: string;
-  courseBanner:string;
   name: string;
   category: string;
   level: string;
   createdBy: string;
-  description: unknown; // Fixed naming convention (camelCase)
   userName: string;
   includeVideo: string;
-  courseOutput?: CourseOutput;
+  courseOutput: CourseOutput[];
   userProfileImage: string;
+  courseBanner: string | null;
+  published: boolean | null;
+  description?: string;
 }

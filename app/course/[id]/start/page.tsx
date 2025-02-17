@@ -8,6 +8,7 @@ import { eq, and } from 'drizzle-orm';
 import { Chapter, Course } from '@/types';
 import ChapterListCard from '@/components/course/ChapterListCard';
 import ChapterContent from '@/components/course/ChapterContent';
+import Heaader from '@/components/course/Heaader';
 
 function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }> }) {
   const params = use(promiseParams); // Unwrap the params Promise
@@ -75,7 +76,11 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
   };
 
   return (
+   <div>
+    <Heaader/>
+
     <div className='flex'>
+
       {/* Sidebar */}
       <div className='md:w-64 h-screen hidden md:block border-r shadow-sm'>
         <h2 className='text-white bg-blue-500 px-4 py-2 font-medium text-lg'>
@@ -101,6 +106,7 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
      
 
 
+    </div>
     </div>
     </div>
   );

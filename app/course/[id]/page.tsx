@@ -8,7 +8,7 @@ import React, { useEffect, useState, use } from 'react';
 import { eq, and } from 'drizzle-orm';
 import ChapterList from '@/components/course/ChapterList';
 import FinishClient from '@/components/course/FinishClient';
-import Header from '@/components/dashboard/Header';
+import Heaader from '@/components/course/Heaader';
 
 interface CoursePageProps {
   params: Promise<{ id: string }>;
@@ -63,7 +63,7 @@ const Course = ({ params }: CoursePageProps) => {
 
   return (
     <div>
-      <Header />
+      <Heaader />
       <div className="mt-10 mb-8 px-7 md:px-16 lg:px-32">
         <div className="font-bold text-center text-2xl text-blue-700 py-2">Course Page</div>
 
