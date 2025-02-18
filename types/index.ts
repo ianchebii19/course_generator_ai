@@ -1,4 +1,4 @@
-export interface Chapters {
+export interface Chapter {
   chapterId: number
   About: string;
   id: number;
@@ -9,7 +9,7 @@ export interface Chapters {
 }
 
 export interface CourseOutput {
-  Chapters?: Chapters[];
+  Chapters?: Chapter[] | unknown;
   ['Course Name']?: string;
   course?: {
     id?: number;
@@ -29,7 +29,7 @@ export interface Course {
   createdBy: string;
   userName: string;
   includeVideo: string;
-  courseOutput: CourseOutput[];
+  courseOutput: CourseOutput[] | unknown;
   userProfileImage: string;
   courseBanner: string | null;
   published: boolean | null;

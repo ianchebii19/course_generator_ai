@@ -8,14 +8,14 @@ import { eq, and } from 'drizzle-orm';
 import { Chapter, Course } from '@/types';
 import ChapterListCard from '@/components/course/ChapterListCard';
 import ChapterContent from '@/components/course/ChapterContent';
-import Heaader from '@/components/course/Heaader';
 
 function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }> }) {
   const params = use(promiseParams); // Unwrap the params Promise
   const { user } = useUser();
   const [course, setCourse] = useState<Course | null>(null);
   const [chapterContent, setChapterContent] = useState<Chapter | null>(null);
-  const [selectedChapter, setSelectedChapter] =useState<Chapter | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+
   useEffect(() => {
     if (!params?.id || !user) return;
 
@@ -33,9 +33,10 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
 
         if (result.length > 0) {
           setCourse({
-            ...result[0], });
+            ...result[0],
+            courseOutput: result[0].courseOutput as Course['courseOutput'],
+          });
         }
-        getSelectedChapterContent(1)
 
         console.log('Fetched Course:', result[0]);
       } catch (error) {
@@ -59,15 +60,17 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
         .where(
           and(
             eq(Chapters.chapterId, chapterId),
-            eq(Chapters.courseId, course?.courseId)
+            eq(Chapters.courseId, course.courseId)
           )
         );
 
       if (result.length > 0) {
+        setChapterContent(result[0]);
         setSelectedChapter(result[0]);
         console.log('Selected Chapter Content:', result[0]);
       } else {
         setChapterContent(null);
+        setSelectedChapter(null);
         console.warn('No chapter content found for chapterId:', chapterId);
       }
     } catch (error) {
@@ -76,23 +79,20 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
   };
 
   return (
-   <div>
-    <Heaader/>
-
-    <div className='flex'>
-
+    <div className="flex">
       {/* Sidebar */}
-      <div className='md:w-64 h-screen hidden md:block border-r shadow-sm'>
-        <h2 className='text-white bg-blue-500 px-4 py-2 font-medium text-lg'>
-          {course?.courseOutput?.['Course Name']:string || 'Course Name Not Available'}
+      <div className="md:w-64 h-screen hidden md:block border-r shadow-sm">
+        <h2 className="text-white bg-blue-500 px-4 py-2 font-medium text-lg">
+          {course?.courseOutput?.['Course Name'] || 'Course Name Not Available'}
         </h2>
         <div>
           {course?.courseOutput?.Chapters?.map((chapter, index) => (
             <div
               key={index}
-              className={`cursor-pointer hover:bg-blue-100 ${selectedChapter?.['Chapter Name'] === chapter['Chapter Name'] ? 'bg-blue-100' : ''}`}
-              onClick={() => {setSelectedChapter(chapter);
-                 getSelectedChapterContent(index+1)}}
+              className={`cursor-pointer hover:bg-blue-100 ${
+                selectedChapter?.['Chapter Name'] === chapter['Chapter Name'] ? 'bg-blue-100' : ''
+              }`}
+              onClick={() => getSelectedChapterContent(index + 1)}
             >
               <ChapterListCard chapter={chapter} index={index} />
             </div>
@@ -101,13 +101,9 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
       </div>
 
       {/* Main Content Area */}
-      <div className='w-full p-4'>
-     <ChapterContent  chapter={selectedChapter} content={chapterContent}/> 
-     
-
-
-    </div>
-    </div>
+      <div className="w-full p-4">
+        <ChapterContent chapter={selectedChapter} />
+      </div>
     </div>
   );
 }

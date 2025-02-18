@@ -1,68 +1,83 @@
-// components/course/CourseLayout.tsx (Client Component)
-'use client';
+import React from 'react';
+import YouTube from 'react-youtube';
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import CourseInfo from '@/components/course/CourseInfo';
-import CourseDetail from '@/components/course/CourseDetail';
-import ChapterList from '@/components/course/ChapterList';
-import { Course } from '@/types';
-import { GenerateChapterContent_AI } from '@/configs/AiModel';
-import { db } from '@/configs';
-import { Chapters } from '@/configs/schema';
-
-function CourseLayout({ course }: { course: Course | null }) {
-  const [currentCourse, setCurrentCourse] = useState(course);
-
-  const generateChapterContent = async () => {
-    if (!currentCourse || !currentCourse.courseOutput?.Chapters) {
-      console.warn('No course or chapters available');
-      return;
-    }
-
-    for (const chapter of currentCourse.courseOutput.Chapters) {
-      const prompt = `Explain the concept in detail on Topic: ${currentCourse.name}, Chapter: ${chapter.name} in JSON format with fields as title and description in detail, Code Example (HTML format) if applicable.`;
-
-      try {
-        // Generate AI content for the chapter
-        const result = await GenerateChapterContent_AI.sendMessage(prompt);
-        const responseText = await result.response?.text();
-        console.log('AI-generated content:', responseText);
-
-        // Save chapter content to the database
-        await db.insert(Chapters).values({
-          chapterName: chapter.name,
-          videoId: '', // Replace with actual video ID if available
-          courseId: currentCourse.courseId,
-          content: responseText || '', // Save AI-generated content
-        });
-
-        console.log(`Saved chapter: ${chapter.ChapterName}`);
-      } catch (error) {
-        console.error('Error generating AI-generated chapter content:', error);
-      }
-    }
-  };
-
-  return (
-    <div className="mt-10 mb-12 px-7 md:px-20 lg:px-44">
-      <div className="font-bold text-center text-2xl">Course Layout</div>
-
-      {/* Render Course Info */}
-      <CourseInfo course={currentCourse} edit={true} />
-
-      {/* Render Course Details */}
-      <CourseDetail course={currentCourse} />
-
-      {/* Render Chapter List */}
-      <ChapterList course={currentCourse} />
-
-      {/* Generate Course Content Button */}
-      <Button className="my-6" onClick={generateChapterContent}>
-        Generate Course Content
-      </Button>
-    </div>
-  );
+interface Section {
+  title: string;
+  description: string;
+  codeExample: string;
 }
 
-export default CourseLayout;
+interface Chapter {
+  ChapterName: string;
+  Description: string;
+  videoId: string;
+  content?: {
+    Chapter: string;
+    Topic: string;
+    Sections: Section[];
+  };
+}
+
+interface ChapterContentProps {
+  chapter: Chapter | null;
+}
+
+const ChapterContent = ({ chapter }: ChapterContentProps) => {
+  const opts = {
+    height: '390',
+    width: '640',
+    playerVars: {
+      autoplay: 1,
+    },
+  };
+
+  const onReady = (event: { target: any }) => {
+    // Access the player instance
+    event.target.pauseVideo(); // Example: Pause the video when it's ready
+  };
+
+  if (!chapter) {
+    return (
+      <div className="p-10">
+        <h2 className="text-xl font-semibold text-blue-500 m-6 flex justify-center">
+          Click to choose a chapter
+        </h2>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="p-10">
+        <h2 className="text-xl font-semibold text-blue-500 m-6 flex justify-center">
+          {chapter?.ChapterName || 'Chapter Name Not Available'}
+        </h2>
+
+        <div className="flex justify-center mx-6">
+          <YouTube
+            videoId={chapter?.videoId || ''} // Use the videoId from the chapter prop
+            opts={opts}
+            onReady={onReady} // Handle the onReady event
+          />
+        </div>
+
+        {/* Render Chapter Sections */}
+        {chapter?.content?.Sections?.map((section, index) => (
+          <div key={index} className="mt-6">
+            <h3 className="font-medium text-xl text-blue-300">
+              {section.title}
+            </h3>
+            {section.description && <p>{section.description}</p>}
+            {section.codeExample && (
+              <pre className="bg-black text-white  p-4 rounded-md">
+                <code className='bg-black text-white' dangerouslySetInnerHTML={{ __html: section.codeExample }} />
+              </pre>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ChapterContent;

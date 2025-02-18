@@ -1,65 +1,68 @@
 import React from 'react';
 import YouTube from 'react-youtube';
 
-interface Chapter {
-  ChapterName: string;
+interface Section {
+  title: string;
   description: string;
-  videoId: string;
-  ['Chapter Name']?: string;
+  codeExample?: string;
 }
 
-interface ContentItem {
-  title: string;
-  description?: string; // Add this if you intend to use description
+interface Chapter {
+  ChapterName: string;
+  Description?: string;
+  videoId?: string;
+  content?: {
+    Sections?: Section[];
+  };
 }
 
 interface ChapterContentProps {
-  chapter: Chapter;
-  content: { content: Array<ContentItem> }; 
+  chapter: Chapter | null;
 }
 
-const ChapterContent = ({ chapter, content }: ChapterContentProps) => {
+const ChapterContent = ({ chapter }: ChapterContentProps) => {
   const opts = {
     height: '390',
     width: '640',
     playerVars: {
-      // https://developers.google.com/youtube/player_parameters
       autoplay: 1,
     },
   };
 
- 
+  if (!chapter) {
+    return <p className="text-center text-gray-500">Click to choose a chapter</p>;
+  }
 
   return (
     <div>
       <div className='p-10'>
         <h2 className='text-xl font-semibold text-blue-500 m-6 flex justify-center'>
-          {chapter?.ChapterName || 'Click to choose chapter'}
+          {chapter.ChapterName || 'Chapter Title Not Available'}
         </h2>
-        {/*<p>{chapter['Chapter Name'] || 'Chapter Description Not Available'}</p>*/}
-
-        <div className='flex justify-center'>
-          <YouTube
-            videoId={chapter?.videoId || ''} // Use the videoId from the chapter prop
-            opts={opts} // Handle the onReady event
-          />
-        </div>
-      </div>
-
-      <div>
-        {content?.content?.map((item, index) => (
-          <div key={index}>
-            <h2 className='font-medium text-xl text-blue-300'>
-              {item.title}
-            </h2>
-            {item.description && <p>{item.description}</p>}
-            <pre>
-              <code>
-                {/* Add code content here if needed */}
-              </code>
-            </pre>
+        
+        {chapter.videoId && (
+          <div className='flex justify-center'>
+            <YouTube videoId={chapter.videoId} opts={opts} />
           </div>
-        ))}
+        )}
+
+        <div className='mt-6'>
+          {chapter.content?.Sections && chapter.content.Sections.length > 0 ? (
+            chapter.content.Sections.map((section, index) => (
+              <div key={index} className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
+                <p className="text-gray-600">{section.description}</p>
+                {section.codeExample && (
+                  <pre className="bg-gray-100 p-2 rounded-md">
+                    <code dangerouslySetInnerHTML={{ __html: section.codeExample }} />
+                  </pre>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No sections available for this chapter.</p>
+          )}
+        </div>
       </div>
     </div>
   );
