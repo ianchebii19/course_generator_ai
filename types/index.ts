@@ -1,4 +1,4 @@
-export interface Chapter {
+export interface Chapters {
   chapterId: number
   About: string;
   id: number;
@@ -9,8 +9,8 @@ export interface Chapter {
 }
 
 export interface CourseOutput {
-  Chapters: Chapter[];
-
+  Chapters?: Chapters[];
+  ['Course Name']?: string;
   course?: {
     id?: number;
     chapterName?: string;

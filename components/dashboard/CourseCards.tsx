@@ -12,6 +12,7 @@ import { Course } from '@/types';
 interface CourseCardsProps {
   course: Course;
   refreshData: () => void;
+  ['Course Name']?: string;
 }
 
 function CourseCards({ course, refreshData }: CourseCardsProps) {
@@ -41,8 +42,6 @@ function CourseCards({ course, refreshData }: CourseCardsProps) {
           width={300}
           height={200}
           className="rounded-t-md h-[200px] object-cover w-full"
-          unoptimized
-          
         />
       </Link>
 

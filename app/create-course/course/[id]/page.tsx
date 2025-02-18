@@ -12,7 +12,8 @@ import CourseDetail from '@/components/course/CourseDetail';
 import ChapterList from '@/components/course/ChapterList';
 import { GenerateChapterContent_AI } from '@/configs/AiModel';
 import { getVideos } from '@/configs/service';
-import { useRouter } from 'next/navigation'; // Updated import
+import { useRouter } from 'next/navigation'; 
+// Updated import
 
 function CourseLayout({ params: promiseParams }: { params: Promise<{ id: string }> }) {
   const params = use(promiseParams);

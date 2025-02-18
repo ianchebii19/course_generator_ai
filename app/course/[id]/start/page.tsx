@@ -84,7 +84,7 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
       {/* Sidebar */}
       <div className='md:w-64 h-screen hidden md:block border-r shadow-sm'>
         <h2 className='text-white bg-blue-500 px-4 py-2 font-medium text-lg'>
-          {course?.courseOutput?.['Course Name'] || 'Course Name Not Available'}
+          {course?.courseOutput?.['Course Name']:string || 'Course Name Not Available'}
         </h2>
         <div>
           {course?.courseOutput?.Chapters?.map((chapter, index) => (
