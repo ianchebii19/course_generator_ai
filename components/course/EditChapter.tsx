@@ -21,6 +21,7 @@ import { Course } from '@/types';
 interface EditChapterProps {
   course: Course;
   index: number;
+  
 }
 
 const EditChapter: React.FC<EditChapterProps> = ({ course, index }) => {

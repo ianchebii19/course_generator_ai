@@ -13,7 +13,6 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
   const params = use(promiseParams); // Unwrap the params Promise
   const { user } = useUser();
   const [course, setCourse] = useState<Course | null>(null);
-  const [chapterContent, setChapterContent] = useState<Chapter | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
 
   useEffect(() => {
@@ -65,11 +64,9 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
         );
 
       if (result.length > 0) {
-        setChapterContent(result[0]);
-        setSelectedChapter(result[0]);
+        setSelectedChapter(result[0]); // Update selectedChapter directly
         console.log('Selected Chapter Content:', result[0]);
       } else {
-        setChapterContent(null);
         setSelectedChapter(null);
         console.warn('No chapter content found for chapterId:', chapterId);
       }

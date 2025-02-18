@@ -31,10 +31,7 @@ const ChapterContent = ({ chapter }: ChapterContentProps) => {
     },
   };
 
-  const onReady = (event: { target: any }) => {
-    // Access the player instance
-    event.target.pauseVideo(); // Example: Pause the video when it's ready
-  };
+ 
 
   if (!chapter) {
     return (
@@ -57,7 +54,7 @@ const ChapterContent = ({ chapter }: ChapterContentProps) => {
           <YouTube
             videoId={chapter?.videoId || ''} // Use the videoId from the chapter prop
             opts={opts}
-            onReady={onReady} // Handle the onReady event
+             // Handle the onReady event
           />
         </div>
 

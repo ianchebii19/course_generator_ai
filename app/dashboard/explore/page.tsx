@@ -4,7 +4,6 @@ import CourseCards from "@/components/dashboard/CourseCards";
 import { db } from "@/configs";
 import { CourseList } from "@/configs/schema";
 import { Course } from "@/types";
-import Image from "next/image";
 import { use, useEffect, useState } from "react";
 
 const Explore = ({ params: promiseParams }: { params: Promise<{ id: string }> }) => {
