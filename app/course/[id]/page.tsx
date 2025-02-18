@@ -44,7 +44,6 @@ const Course = ({ params }: CoursePageProps) => {
         if (result.length > 0) {
           setCourse({
             ...result[0],
-            courseOutput: result[0].courseOutput as Course['courseOutput'],
           });
         }
 

@@ -29,9 +29,8 @@ export interface Course {
   createdBy: string;
   userName: string;
   includeVideo: string;
-  courseOutput: CourseOutput[] | unknown;
+  courseOutput: unknown;
   userProfileImage: string;
   courseBanner: string | null;
   published: boolean | null;
-  description?: string;
 }
