@@ -9,6 +9,7 @@ import { eq, and } from 'drizzle-orm';
 import { Chapter, Course } from '@/types';
 import ChapterListCard from '@/components/course/ChapterListCard';
 import ChapterContent from '@/components/course/ChapterContent';
+import Heaader from '@/components/course/Heaader';
 
 function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }> }) {
   const params = use(promiseParams); // Unwrap the params Promise
@@ -78,10 +79,12 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
   // @ts-ignore
 
   return (
-    <div className="flex">
+    <div>
+      <Heaader/>
+      <div className="flex">
       {/* Sidebar */}
       <div className="md:w-64 h-screen hidden md:block border-r shadow-sm">
-        <h2 className="text-white bg-blue-500 px-4 py-2 font-medium text-lg">
+        <h2 className="text-white bg-blue-400 px-4 py-2 font-medium text-lg">
         {/* @ts-ignore*/}
           {course?.courseOutput?.['Course Name'] || 'Course Name Not Available'}
         </h2>
@@ -110,6 +113,8 @@ function CoursePage({ params: promiseParams }: { params: Promise<{ id: string }>
         <ChapterContent chapter={selectedChapter} />
       </div>
     </div>
+    </div>
+   
   );
 }
 
