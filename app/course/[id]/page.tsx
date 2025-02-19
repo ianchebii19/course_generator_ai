@@ -15,6 +15,7 @@ interface CoursePageProps {
   params: Promise<{ id: string }>;
 }
 
+
 const CoursePage = ({ params }: CoursePageProps) => {
   const { user } = useUser();
   const [course, setCourse] = useState<Course | null>(null);

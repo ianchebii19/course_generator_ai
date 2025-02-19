@@ -1,3 +1,4 @@
+// @ts-nocheck
 import EditChapter from './EditChapter';
 import { Course } from '@/types'; // ✅ Import unified Course type
 

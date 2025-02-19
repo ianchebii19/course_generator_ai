@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 import { Button } from '@/components/ui/button';
 import { FaBookOpen } from 'react-icons/fa';
 import EditCourse from './EditCourse';

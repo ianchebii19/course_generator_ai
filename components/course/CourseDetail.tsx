@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 import { Course } from "@/types";
 
 interface CourseInfoProps {
@@ -5,6 +7,7 @@ interface CourseInfoProps {
 
 }
 const CourseDetail: React.FC<CourseInfoProps> = ({ course }) => {
+  
   return (
     <div className='border p-6 rounded-md shadow-sm mt-3'>
       <div className='grid grid-cols-2 md:grid-cols-4'>

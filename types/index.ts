@@ -10,7 +10,10 @@ export interface Chapter {
 
 export interface CourseOutput {
   Chapters?: Chapter[] | unknown;
-  ['Course Name']?: string;
+  'Course Name': string;
+  'Total Duration'?: string;
+  TotalDuration?: string;
+  Description?: string;
   course?: {
     id?: number;
     chapterName?: string;
