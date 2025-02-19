@@ -2,7 +2,6 @@ import EditChapter from './EditChapter';
 import { Course } from '@/types'; // ✅ Import unified Course type
 
 interface ChapterListProps {
-  courseOutput: Course['courseOutput'];
   course: Course | null;
   edit?: boolean;
 }
