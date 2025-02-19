@@ -1,9 +1,9 @@
 export interface Chapter {
   chapterId: number
-  About: string;
   id: number;
-  chapterName: string;
-  content: [];
+  content: [] | unknown;
+  videoId: string;
+  courseId: string;
 
   // Add other properties as needed
 }
